@@ -70,10 +70,18 @@ data$Ideology = factor(data$c_ideo_r, levels = c("Not disclosed", "Centrist", "R
 table(data$Ideology, useNA = "always")
 
 table(data$c_inoutgr, useNA = "always")
-data$c_inoutgr =ifelse(data$c_inoutgr == "Non note", "Unknown", data$c_inoutgr)
+data$c_inoutgr =ifelse(data$c_inoutgr == "Non note", "Political group unknown", data$c_inoutgr)
+data$c_inoutgr =ifelse(data$c_inoutgr == "Ingroup", "Political ingroup", data$c_inoutgr)
+data$c_inoutgr =ifelse(data$c_inoutgr == "Outgroup", "Political outgroup", data$c_inoutgr)
 table(data$c_inoutgr, useNA = "always")
 
-data$Group = factor(data$c_inoutgr, levels = c("Unknown", "Ingroup", "Outgroup"))
+data$Group = factor(data$c_inoutgr, levels = c("Political group unknown", "Political ingroup", "Political outgroup"))
+
+table(data$Group, useNA = "always")
+
+data$c_inoutgr_gender = factor(data$c_inoutgr_gender)
+data$c_inoutgr_age = factor(data$c_inoutgr_age)
+data$c_inoutgr_macroregion = factor(data$c_inoutgr_macroregion)
 
 table(data$Group, useNA = "always")
 
@@ -155,7 +163,7 @@ plot(cj(data,
 ######
 
 mm <- cj(data,
-         chosen ~ Gender + Age + Area + Profession + Profession + Group + Ideology,
+         chosen ~ Gender + Age + Area + Profession + Ideology,
          id = ~id,
          estimate = "mm")
 
@@ -178,6 +186,34 @@ p
 
 ggsave(paste0(output_wd,"mm_general_eng.png"), p, height = 12, width = 8)
 
+
+######
+### Marginal means: Figure 7: Effect of Ingroup/Outgroupness 
+######
+
+
+mm <- cj(data,
+         chosen ~ c_inoutgr_gender + c_inoutgr_age + c_inoutgr_macroregion + Group,
+         id = ~id,
+         estimate = "mm")
+
+
+mm$variable <- fct_reorder(mm$level, desc(mm$estimate))
+
+
+p = ggplot(mm)+
+  geom_vline(aes(xintercept=0.5), col="black", alpha=1/4)+
+  geom_pointrange(aes(x=estimate, xmin=lower, xmax=upper, y=variable), col='black')+
+  ylab("(Recoded) Attribute")+
+  xlab("Marginal mean")+
+  theme_minimal()+
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = 15),
+        axis.text.y = element_text(size = 13))
+
+p
+
+ggsave(paste0(output_wd,"mm_inoutgr_eng.png"), p, height = 12, width = 8)
 
 
 #################################

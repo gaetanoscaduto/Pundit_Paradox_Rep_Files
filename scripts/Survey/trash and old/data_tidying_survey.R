@@ -30,7 +30,7 @@ toexclude = seq(toexclude, ncol(data), 1)
 
 data = data[-toexclude]
 
-View(data)
+#View(data)
 #####
 ### CHECK MISSING
 
@@ -214,7 +214,7 @@ table(data$ideology_r2)
 ##DA RICONTROLLARE
 
 #####
-# Outgroup, ingroup
+# Outgroup, ingroup POLITICO
 #####
 
 data$outgroup = ifelse(data$ideology_r2 =="Centro", "Destra e Sinistra",
@@ -242,7 +242,67 @@ while(i<=nrow(data))
 table(data$ingroup)
 table(data$ideology_r2, data$ingroup)
 
-#RICONTROLLA SOPRA MA SEMBREREBBE TUTTO OK
+
+#####
+# Outgroup, ingroup, GENDER
+#####
+
+
+data$outgroup_gender = ifelse(data$gender_r =="Maschio", "Femmina","Maschio")
+
+table(data$outgroup_gender, data$gender_r)
+
+data$ingroup_gender = data$gender_r
+
+data$ingroup_gender=ifelse(data$ingroup_gender=="Femmina", "F", "M")
+
+table(data$ingroup_gender, data$gender_r)
+
+#####
+# Outgroup, ingroup, AGE
+#####
+
+data$outgroup_age = ifelse(data$age_r2 =="Adulto", "Giovane e anziano",
+                           ifelse(data$age_r2 == "Giovane", "Adulto e anziano",
+                                  "Giovane e adulto"))
+
+table(data$outgroup_age, data$age_r2)
+
+data$ingroup_age = data$age_r2
+
+table(data$ingroup_age, data$age_r2)
+
+data$ingroup_age=ifelse(data$ingroup_age=="Giovane", "37", 
+                        ifelse(data$ingroup_age=="Adulto", "52", "67"))
+
+table(data$ingroup_age, data$age_r2)
+
+#####
+# Outgroup, ingroup, MACROREGION
+#####
+
+data$macroregion = ifelse(data$macroarea1=="Nord-est" | data$macroarea1 == "Nord-ovest",
+                          "Nord", data$macroarea1)
+
+data$macroregion = ifelse(data$macroregion=="Sud e isole",
+                          "Sud", data$macroregion)
+
+table(data$macroarea1, data$macroregion)
+
+data$outgroup_macroregion = ifelse(data$macroregion =="Nord", "Centro e sud",
+                           ifelse(data$macroregion == "Sud", "Centro e nord",
+                                  "Nord e sud"))
+
+table(data$outgroup_macroregion, data$macroregion)
+
+data$ingroup_macroregion = data$macroregion
+
+table(data$ingroup_macroregion, data$macroregion)
+
+data$ingroup_macroregion=ifelse(data$ingroup_macroregion=="Sud", "Sud Italia", 
+                        ifelse(data$ingroup_macroregion=="Nord", "Nord Italia", "Centro Italia"))
+
+table(data$ingroup_macroregion, data$macroregion)
 
 
 #####
@@ -387,6 +447,28 @@ for(i in 1:nrow(cjdata))
 
 table(cjdata$c_inoutgr)
 
+
+
+cjdata$c_inoutgr_gender = ifelse(cjdata$ingroup_gender == cjdata$c_gender_r, "Gender ingroup", "Gender outgroup")
+
+
+table(cjdata$c_inoutgr_gender, cjdata$c_gender_r, cjdata$ingroup_gender)
+
+
+
+cjdata$c_inoutgr_age = ifelse(cjdata$ingroup_age == cjdata$c_age_r, "Age ingroup", "Age outgroup")
+
+
+table(cjdata$c_inoutgr_age, cjdata$c_age_r, cjdata$ingroup_age)
+
+
+
+cjdata$c_inoutgr_macroregion = ifelse(cjdata$ingroup_macroregion == cjdata$c_prov_r, "Macroregional ingroup", "Macroregional outgroup")
+
+
+table(cjdata$c_inoutgr_macroregion, cjdata$c_prov_r, cjdata$ingroup_macroregion)
+
+
 export(cjdata, paste0(getwd(), "/data/survey/","cjdata_ready.RDS"))
 
-       
+export(cjdata, "C:/Users/gasca/OneDrive - Università degli Studi di Milano-Bicocca/Dottorato/Papers and Chapters/Negri Scaduto 2024/Pundit_Paradox_Rep_Files/data/survey/cjdata_ready.RDS")
